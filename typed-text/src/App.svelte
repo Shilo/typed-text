@@ -152,6 +152,18 @@
     color: white;
     font-size: 0.9rem;
     cursor: pointer;
+    border: 1px solid white;
+    border-radius: 10rem;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+  }
+
+  nav .toggle-label:hover {
+    transform: scale(1.05);
+  }
+
+  nav .toggle-label:active {
+    transform: scale(0.95);
   }
 
   nav .toggle-label input[type="checkbox"] {
@@ -181,13 +193,5 @@
     color: darkslategray;
     font-size: 0.9rem;
     font-weight: bold;
-  }
-
-  nav .toggle-label input[type="checkbox"]:hover {
-    transform: scale(1.05);
-  }
-
-  nav .toggle-label input[type="checkbox"]:active {
-    transform: scale(0.95);
   }
 </style>
