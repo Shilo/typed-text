@@ -1,17 +1,23 @@
 <script lang="ts">
+  import TypedText from "./TypedText";
+
   const textStyles = {
     summary: "Hello World!",
     full: "Hello World! This is a full text that demonstrates the typing animation works with longer content. The text will appear character by character, creating an engaging visual effect for the user.",
-    alternative: "This is an alternative text.",
+    other: "This is an alternative text.",
     none: "",
   };
-  let text = $state(textStyles.summary);
-  let activeStyle = $state<keyof typeof textStyles>("summary");
 
-  const setTextStyle = (style: keyof typeof textStyles) => {
-    text = textStyles[style];
-    activeStyle = style;
-  };
+  let activeTextStyle = $state<keyof typeof textStyles>("summary");
+  // svelte-ignore state_referenced_locally
+  let text = $state(textStyles[activeTextStyle]);
+  // svelte-ignore state_referenced_locally
+  const typedText = new TypedText(text, (value) => (text = value));
+
+  function setTextStyle(style: keyof typeof textStyles) {
+    activeTextStyle = style;
+    typedText.target = textStyles[activeTextStyle];
+  }
 </script>
 
 <main>
@@ -23,7 +29,7 @@
   <div class="button-group">
     {#each Object.keys(textStyles) as style (style)}
       <button
-        class:active={activeStyle === style}
+        class:active={activeTextStyle === style}
         onclick={() => setTextStyle(style as keyof typeof textStyles)}
       >
         {style.toUpperCase()}
