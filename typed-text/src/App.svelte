@@ -12,10 +12,10 @@
 
   let animatePerCharacter = $state(false);
   let activeTextStyle = $state<keyof typeof textStyles>("short");
+  let text = $state("");
+  const typedText = new TypedText("", (value) => (text = value));
   // svelte-ignore state_referenced_locally
-  let text = $state(textStyles[activeTextStyle]);
-  // svelte-ignore state_referenced_locally
-  const typedText = new TypedText(text, (value) => (text = value));
+  typedText.target = textStyles[activeTextStyle];
 
   updateAnimationMode();
 
