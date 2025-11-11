@@ -147,7 +147,14 @@ export default class TypedText {
         if (charactersToAnimate === 0)
             return totalDurationMs;
 
-        return Math.max(idealIntervalPerCharacter, MIN_ANIMATION_INTERVAL_MS);
+        if (idealIntervalPerCharacter >= MIN_ANIMATION_INTERVAL_MS)
+            return idealIntervalPerCharacter;
+
+        const charactersPerUpdate = this.getCharactersPerTick();
+        const numberOfTicks = charactersToAnimate / charactersPerUpdate;
+        const calculatedInterval = totalDurationMs / numberOfTicks;
+
+        return Math.max(calculatedInterval, MIN_ANIMATION_INTERVAL_MS);
     }
 
     private getCharactersPerTick(): number {
