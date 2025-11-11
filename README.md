@@ -10,6 +10,7 @@ A lightweight TypeScript class for creating smooth, animated text typing effect.
 - 📦 Zero dependencies
 - 🎯 TypeScript support
 - 🔌 Callback-based updates
+- 🧹 Auto-cleanup when destroyed
 
 ## Download and Installation
 
@@ -77,6 +78,13 @@ const current = typedText.current;
 
 // Get target text
 const target = typedText.target;
+
+// Auto-destroy by setting target to null/undefined
+typedText.target = null; // Stops animation and cleans up resources
+typedText.target = undefined; // Same as null
+
+// Or manually destroy
+typedText.destroy();
 ```
 
 ## API Reference
@@ -92,8 +100,8 @@ new TypedText(initialValue?: string, onUpdate?: (value: string) => void)
 
 ### Properties
 
-#### `target: string`
-Sets the target text to animate to. When changed, automatically starts the animation.
+#### `target: string | null | undefined`
+Sets the target text to animate to. When changed, automatically starts the animation. Setting to `null` or `undefined` will automatically destroy the instance, stopping all animations and clearing resources.
 
 #### `current: string` (read-only)
 Gets the currently displayed text value.
@@ -114,6 +122,9 @@ Returns `true` if animation is enabled (duration >= 0).
 Callback function that gets called whenever the displayed text changes.
 
 ### Methods
+
+#### `destroy(): void`
+Manually destroys the instance, stopping any running animations, clearing the current and target text, and removing the update callback. This method is automatically called when `target` is set to `null` or `undefined`.
 
 #### `toString(): string`
 Returns the current displayed text value. Useful for string interpolation.

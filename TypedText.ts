@@ -21,7 +21,12 @@ export default class TypedText {
         this.current = this._target = initialValue;
     }
 
-    set target(value: string) {
+    set target(value: string | null | undefined) {
+        if (value === null || value === undefined) {
+            this.destroy();
+            return;
+        }
+
         if (this._target === value) return;
 
         this._target = value;
@@ -79,6 +84,17 @@ export default class TypedText {
         return this._animationID !== null;
     }
 
+    destroy() {
+        this.stopAnimation();
+        this._current = "";
+        this._target = "";
+        this.onUpdate = undefined;
+    }
+
+    toString() {
+        return this._current;
+    }
+
     private get isCurrentAndTargetRelated() {
         if (this._current.length < this._target.length) {
             if (this._target.startsWith(this._current))
@@ -90,10 +106,6 @@ export default class TypedText {
         }
 
         return false;
-    }
-
-    toString() {
-        return this._current;
     }
 
     private startAnimation() {
