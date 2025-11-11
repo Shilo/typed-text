@@ -3,7 +3,7 @@ export default class TypedText {
 
     private _current: string = "";
     private _target: string = "";
-    private _animationDuration: number = 1.0;
+    private _animationDurationSeconds: number = 1.0;
     private _animatePerCharacter: boolean = false;
     private _animationID: number | null = null;
 
@@ -40,15 +40,15 @@ export default class TypedText {
         return this._current;
     }
 
-    set animationDuration(value: number) {
-        this._animationDuration = value;
+    set animationDurationSeconds(value: number) {
+        this._animationDurationSeconds = value;
 
         if (this._animationID !== null)
             this.startAnimation();
     }
 
-    get animationDuration(): number {
-        return this._animationDuration;
+    get animationDurationSeconds(): number {
+        return this._animationDurationSeconds;
     }
 
     set animatePerCharacter(value: boolean) {
@@ -63,7 +63,7 @@ export default class TypedText {
     }
 
     get isAnimatable(): boolean {
-        return this._animationDuration >= 0;
+        return this._animationDurationSeconds >= 0;
     }
 
     get isAnimating(): boolean {
@@ -115,15 +115,15 @@ export default class TypedText {
 
     private get animationIntervalDelayMilliseconds(): number {
         if (this._animatePerCharacter)
-            return this._animationDuration * 1000;
+            return this._animationDurationSeconds * 1000;
 
         const charactersToAnimate = Math.abs(this._target.length - this._current.length);
 
         if (charactersToAnimate === 0) {
-            return this._animationDuration * 1000;
+            return this._animationDurationSeconds * 1000;
         }
 
-        return (this._animationDuration * 1000) / charactersToAnimate;
+        return (this._animationDurationSeconds * 1000) / charactersToAnimate;
     }
 
     private stopAnimation() {
