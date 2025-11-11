@@ -109,7 +109,6 @@ export default class TypedText {
 
         this.updateAnimationTiming();
         const charactersPerUpdate = this.getCharactersPerTick();
-        const totalDuration = (this._target.length - this._current.length) / charactersPerUpdate * this.animationIntervalDelayMilliseconds;
 
         this._animationID = setInterval(() => {
             const currentLength = this._current.length;
@@ -171,7 +170,7 @@ export default class TypedText {
         const charactersToAnimate = Math.abs(this._target.length - this._current.length);
         const idealIntervalPerCharacter = charactersToAnimate > 0
             ? totalDurationMs / charactersToAnimate
-            : totalDurationMs;
+            : 0;
 
         this._animationTiming = {
             totalDurationMs,
