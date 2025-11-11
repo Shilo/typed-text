@@ -3,9 +3,9 @@ export default class TypedText {
 
     private _current: string = "";
     private _target: string = "";
-    private _animationID: number | null = null;
-    private _animationSpeedSeconds: number = 1.0;
+    private _animationDuration: number = 1.0;
     private _animatePerCharacter: boolean = false;
+    private _animationID: number | null = null;
 
     constructor(initialValue: string = "", onUpdate?: (value: string) => void) {
         this.onUpdate = onUpdate;
@@ -40,15 +40,15 @@ export default class TypedText {
         return this._current;
     }
 
-    set animationSpeedSeconds(value: number) {
-        this._animationSpeedSeconds = value;
+    set animationDuration(value: number) {
+        this._animationDuration = value;
 
         if (this._animationID !== null)
             this.startAnimation();
     }
 
-    get animationSpeedSeconds(): number {
-        return this._animationSpeedSeconds;
+    get animationDuration(): number {
+        return this._animationDuration;
     }
 
     set animatePerCharacter(value: boolean) {
@@ -63,7 +63,7 @@ export default class TypedText {
     }
 
     get isAnimatable(): boolean {
-        return this._animationSpeedSeconds >= 0;
+        return this._animationDuration >= 0;
     }
 
     get isAnimating(): boolean {
@@ -115,15 +115,15 @@ export default class TypedText {
 
     private get animationIntervalDelayMilliseconds(): number {
         if (this._animatePerCharacter)
-            return this._animationSpeedSeconds * 1000;
+            return this._animationDuration * 1000;
 
         const charactersToAnimate = Math.abs(this._target.length - this._current.length);
 
         if (charactersToAnimate === 0) {
-            return this._animationSpeedSeconds * 1000;
+            return this._animationDuration * 1000;
         }
 
-        return (this._animationSpeedSeconds * 1000) / charactersToAnimate;
+        return (this._animationDuration * 1000) / charactersToAnimate;
     }
 
     private stopAnimation() {
