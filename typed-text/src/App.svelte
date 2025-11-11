@@ -1,7 +1,7 @@
 <script lang="ts">
   import TypedText from "./TypedText";
 
-  const GITHUB_URL = "https://github.com/your-username/your-repo";
+  const GITHUB_URL = "https://github.com/shilo/typed-text";
 
   const textStyles = {
     short: "Hello World!",
