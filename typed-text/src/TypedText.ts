@@ -1,3 +1,11 @@
+type AnimationTiming = {
+    totalDurationMs: number;
+    charactersToAnimate: number;
+    idealIntervalPerCharacter: number;
+};
+
+const MIN_ANIMATION_INTERVAL_MS = 16;
+
 export default class TypedText {
     public onUpdate?: (currentValue: string) => void;
 
@@ -6,6 +14,7 @@ export default class TypedText {
     private _animationDurationSeconds: number = 1.0;
     private _animatePerCharacter: boolean = false;
     private _animationID: number | null = null;
+    private _animationTiming: AnimationTiming | null = null;
 
     constructor(initialValue: string = "", onUpdate?: (value: string) => void) {
         this.onUpdate = onUpdate;
@@ -98,6 +107,10 @@ export default class TypedText {
             return;
         }
 
+        this.updateAnimationTiming();
+        const charactersPerUpdate = this.getCharactersPerTick();
+        const totalDuration = (this._target.length - this._current.length) / charactersPerUpdate * this.animationIntervalDelayMilliseconds;
+
         this._animationID = setInterval(() => {
             const currentLength = this._current.length;
             const targetLength = this._target.length;
@@ -107,23 +120,14 @@ export default class TypedText {
                 return;
             }
 
-            this.current = currentLength < targetLength ?
-                this._current + this._target[currentLength] :
-                this._current.slice(0, -1);
+            if (currentLength < targetLength) {
+                const charsToAdd = Math.min(charactersPerUpdate, targetLength - currentLength);
+                this.current += this._target.slice(currentLength, currentLength + charsToAdd);
+            } else {
+                const charsToRemove = Math.min(charactersPerUpdate, currentLength - targetLength);
+                this.current = this._current.slice(0, -charsToRemove);
+            }
         }, this.animationIntervalDelayMilliseconds);
-    }
-
-    private get animationIntervalDelayMilliseconds(): number {
-        if (this._animatePerCharacter)
-            return this._animationDurationSeconds * 1000;
-
-        const charactersToAnimate = Math.abs(this._target.length - this._current.length);
-
-        if (charactersToAnimate === 0) {
-            return this._animationDurationSeconds * 1000;
-        }
-
-        return (this._animationDurationSeconds * 1000) / charactersToAnimate;
     }
 
     private stopAnimation() {
@@ -131,5 +135,48 @@ export default class TypedText {
 
         clearInterval(this._animationID);
         this._animationID = null;
+        this._animationTiming = null;
+    }
+
+    private get animationIntervalDelayMilliseconds(): number {
+        if (this._animatePerCharacter
+            || !this._animationTiming)
+            return this._animationDurationSeconds * 1000;
+
+        const { totalDurationMs, charactersToAnimate, idealIntervalPerCharacter } = this._animationTiming;
+
+        if (charactersToAnimate === 0)
+            return totalDurationMs;
+
+        return Math.max(idealIntervalPerCharacter, MIN_ANIMATION_INTERVAL_MS);
+    }
+
+    private getCharactersPerTick(): number {
+        if (this._animatePerCharacter
+            || !this._animationTiming)
+            return 1;
+
+        const { charactersToAnimate, idealIntervalPerCharacter, totalDurationMs } = this._animationTiming;
+
+        if (charactersToAnimate === 0
+            || idealIntervalPerCharacter >= MIN_ANIMATION_INTERVAL_MS)
+            return 1;
+
+        const charactersPerMinInterval = (MIN_ANIMATION_INTERVAL_MS * charactersToAnimate) / totalDurationMs;
+        return Math.max(1, Math.ceil(charactersPerMinInterval));
+    }
+
+    private updateAnimationTiming(): void {
+        const totalDurationMs = this._animationDurationSeconds * 1000;
+        const charactersToAnimate = Math.abs(this._target.length - this._current.length);
+        const idealIntervalPerCharacter = charactersToAnimate > 0
+            ? totalDurationMs / charactersToAnimate
+            : totalDurationMs;
+
+        this._animationTiming = {
+            totalDurationMs,
+            charactersToAnimate,
+            idealIntervalPerCharacter
+        };
     }
 }
