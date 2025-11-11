@@ -35,6 +35,8 @@
   }
 </script>
 
+<header>TypedText</header>
+
 <main>
   {text}
 </main>
@@ -77,6 +79,13 @@
     width: 100%;
   }
 
+  header {
+    padding: 2rem 2rem 0 2rem;
+    font-size: 1.5rem;
+    color: white;
+    text-align: center;
+  }
+
   main {
     display: flex;
     justify-content: center;
@@ -92,6 +101,7 @@
   }
 
   main,
+  header,
   nav * {
     font-family: "Cherry Bomb One", system-ui;
   }
