@@ -11,7 +11,7 @@
   };
 
   let animatePerCharacter = $state(false);
-  let activeTextStyle = $state<keyof typeof textStyles>("short");
+  let activeTextStyle = $state<keyof typeof textStyles>("full");
   let text = $state("");
   const typedText = new TypedText("", (value) => (text = value));
   // svelte-ignore state_referenced_locally
