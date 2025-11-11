@@ -2,21 +2,36 @@
   import TypedText from "./TypedText";
 
   const textStyles = {
-    summary: "Hello World!",
-    full: "Hello World! This is a full text that demonstrates the typing animation works with longer content. The text will appear character by character, creating an engaging visual effect for the user.",
+    short: "Hello World!",
+    medium:
+      "Hello World! This is text that demonstrates the typing animation works with longer content.",
+    full: "Hello World! This is text that demonstrates the typing animation works with longer content. The text will appear character by character, creating an engaging visual effect for the user.",
     other: "This is an alternative text.",
     none: "",
   };
 
-  let activeTextStyle = $state<keyof typeof textStyles>("summary");
+  let animatePerCharacter = $state(false);
+  let activeTextStyle = $state<keyof typeof textStyles>("short");
   // svelte-ignore state_referenced_locally
   let text = $state(textStyles[activeTextStyle]);
   // svelte-ignore state_referenced_locally
   const typedText = new TypedText(text, (value) => (text = value));
 
+  updateAnimationMode();
+
   function setTextStyle(style: keyof typeof textStyles) {
     activeTextStyle = style;
     typedText.target = textStyles[activeTextStyle];
+  }
+
+  function toggleAnimationMode() {
+    animatePerCharacter = !animatePerCharacter;
+    updateAnimationMode();
+  }
+
+  function updateAnimationMode() {
+    typedText.animatePerCharacter = animatePerCharacter;
+    typedText.animationDurationSeconds = animatePerCharacter ? 0.01 : 1.0;
   }
 </script>
 
@@ -26,6 +41,14 @@
 
 <nav>
   <h2>TEXT STYLE</h2>
+  <label class="toggle-label">
+    <input
+      type="checkbox"
+      checked={animatePerCharacter}
+      onchange={toggleAnimationMode}
+    />
+    ANIMATE PER CHARACTER
+  </label>
   <div class="button-group">
     {#each Object.keys(textStyles) as style (style)}
       <button
@@ -119,6 +142,52 @@
   }
 
   nav button:active {
+    transform: scale(0.95);
+  }
+
+  nav .toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  nav .toggle-label input[type="checkbox"] {
+    width: 1.2rem;
+    height: 1.2rem;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: #2f4f4f;
+    border: 1px solid white;
+    border-radius: 0.25rem;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
+  nav .toggle-label input[type="checkbox"]:checked {
+    background-color: white;
+    border-color: white;
+  }
+
+  nav .toggle-label input[type="checkbox"]:checked::after {
+    content: "✓";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: darkslategray;
+    font-size: 0.9rem;
+    font-weight: bold;
+  }
+
+  nav .toggle-label input[type="checkbox"]:hover {
+    transform: scale(1.05);
+  }
+
+  nav .toggle-label input[type="checkbox"]:active {
     transform: scale(0.95);
   }
 </style>
