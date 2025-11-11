@@ -1,5 +1,5 @@
 <script lang="ts">
-  import TypedText from "./TypedText";
+  import TypedText from "../../TypedText";
 
   const GITHUB_URL = "https://github.com/shilo/typed-text";
 
