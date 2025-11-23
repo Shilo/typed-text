@@ -1,5 +1,5 @@
 <script lang="ts">
-  import TypedText from "../../TypedText";
+  import TypedText, { ResetAnimationType } from "../../TypedText";
 
   const GITHUB_URL = "https://github.com/shilo/typed-text";
 
@@ -14,10 +14,15 @@
 
   let animatePerCharacter = $state(false);
   let activeTextStyle = $state<keyof typeof textStyles>("full");
+  let resetAnimationType = $state<ResetAnimationType>(
+    ResetAnimationType.OnNoMatch,
+  );
   let text = $state("");
   const typedText = new TypedText("", (value) => (text = value));
   // svelte-ignore state_referenced_locally
   typedText.target = textStyles[activeTextStyle];
+  // svelte-ignore state_referenced_locally
+  typedText.resetAnimationType = resetAnimationType;
 
   updateAnimationMode();
 
@@ -34,6 +39,11 @@
   function updateAnimationMode() {
     typedText.animatePerCharacter = animatePerCharacter;
     typedText.animationDurationSeconds = animatePerCharacter ? 0.01 : 1.0;
+  }
+
+  function setResetAnimationType(type: ResetAnimationType) {
+    resetAnimationType = type;
+    typedText.resetAnimationType = type;
   }
 </script>
 
@@ -65,15 +75,6 @@
 </main>
 
 <nav>
-  <h2>TEXT STYLE</h2>
-  <label class="toggle-label">
-    <input
-      type="checkbox"
-      checked={animatePerCharacter}
-      onchange={toggleAnimationMode}
-    />
-    ANIMATE PER CHARACTER
-  </label>
   <div class="button-group">
     {#each Object.keys(textStyles) as style (style)}
       <button
@@ -83,6 +84,26 @@
         {style.toUpperCase()}
       </button>
     {/each}
+  </div>
+  <div class="controls-group">
+    <select
+      class="reset-type-select"
+      value={resetAnimationType}
+      onchange={(e) =>
+        setResetAnimationType(e.currentTarget.value as ResetAnimationType)}
+    >
+      {#each Object.values(ResetAnimationType) as type (type)}
+        <option value={type}>RESET: {type.toUpperCase()}</option>
+      {/each}
+    </select>
+    <label class="toggle-label">
+      <input
+        type="checkbox"
+        checked={animatePerCharacter}
+        onchange={toggleAnimationMode}
+      />
+      ANIMATE PER CHARACTER
+    </label>
   </div>
 </nav>
 
@@ -166,6 +187,12 @@
     font-weight: normal;
   }
 
+  nav .controls-group {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+  }
+
   nav .button-group {
     display: flex;
     justify-content: center;
@@ -245,5 +272,38 @@
     color: darkslategray;
     font-size: 0.9rem;
     font-weight: bold;
+  }
+
+  nav .reset-type-select {
+    background-color: #2f4f4f;
+    border: 1px solid white;
+    border-radius: 10rem;
+    padding: 0.5rem 1rem;
+    color: white;
+    font-size: 0.9rem;
+    font-family: "Cherry Bomb One", system-ui;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='white' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2.5rem;
+    outline: none;
+  }
+
+  nav .reset-type-select:hover {
+    transform: scale(1.05);
+  }
+
+  nav .reset-type-select:active {
+    transform: scale(0.95);
+  }
+
+  nav .reset-type-select option {
+    background-color: #2f4f4f;
+    color: white;
   }
 </style>

@@ -6,7 +6,14 @@ type AnimationTiming = {
 
 const MIN_ANIMATION_INTERVAL_MS = 16;
 
+export enum ResetAnimationType {
+    OnNoMatch = "On No Match",
+    Always = "Always",
+    Never = "Never"
+}
+
 export default class TypedText {
+    public resetAnimationType: ResetAnimationType = ResetAnimationType.OnNoMatch;
     public onUpdate?: (currentValue: string) => void;
 
     private _current: string = "";
@@ -31,11 +38,7 @@ export default class TypedText {
 
         this._target = value;
 
-        // If the current and target are not derived from the same text,
-        // restart the animation from an empty string.
-        if (!this.isCurrentAndTargetRelated)
-            this.current = "";
-
+        this.resetCurrentIfNeeded();
         this.startAnimation();
     }
 
@@ -95,7 +98,18 @@ export default class TypedText {
         return this._current;
     }
 
-    private get isCurrentAndTargetRelated() {
+    private resetCurrentIfNeeded(): void {
+        if (this.resetAnimationType === ResetAnimationType.Never)
+            return;
+
+        if (this.resetAnimationType === ResetAnimationType.Always
+            || (this.resetAnimationType === ResetAnimationType.OnNoMatch && !this.isCurrentAndTargetPartialMatch)) {
+            this.current = "";
+            return;
+        }
+    }
+
+    private get isCurrentAndTargetPartialMatch() {
         if (this._current.length < this._target.length) {
             if (this._target.startsWith(this._current))
                 return true;
