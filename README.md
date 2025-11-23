@@ -7,6 +7,7 @@ A lightweight TypeScript class for creating smooth, animated text typing effect.
 - 🎬 Smooth text typing animations
 - ⚙️ Configurable animation duration
 - 🔄 Character-by-character or bulk animation modes
+- 🎛️ Configurable reset animation behavior (On No Match, Always, Never)
 - 📦 Zero dependencies
 - 🎯 TypeScript support
 - 🔌 Callback-based updates
@@ -62,11 +63,18 @@ typedText.target = "New text to display";
 ### Configuration Options
 
 ```typescript
+import TypedText, { ResetAnimationType } from './TypedText';
+
 // Set animation duration (in seconds)
 typedText.animationDurationSeconds = 2.0; // Default: 1.0
 
 // Enable character-by-character animation
 typedText.animatePerCharacter = true; // Default: false
+
+// Configure reset animation behavior
+typedText.resetAnimationType = ResetAnimationType.OnNoMatch; // Reset only if current and target don't match (default)
+typedText.resetAnimationType = ResetAnimationType.Always; // Always reset to empty before animating
+typedText.resetAnimationType = ResetAnimationType.Never; // Never reset, continue from current position
 
 // Check if animation is currently running
 if (typedText.isAnimating) {
@@ -88,6 +96,16 @@ typedText.destroy();
 ```
 
 ## API Reference
+
+### Enums
+
+#### `ResetAnimationType`
+
+Controls how the animation resets when the target text changes:
+
+- `ResetAnimationType.OnNoMatch` **(default)**: Resets to empty only if the current text and target text don't partially match
+- `ResetAnimationType.Always`: Always resets the current text to empty before animating to the new target
+- `ResetAnimationType.Never`: Never resets, continues animating from the current position
 
 ### Constructor
 
@@ -111,6 +129,9 @@ Sets the duration of the animation in seconds. Default: `1.0`.
 
 #### `animatePerCharacter: boolean`
 When `true`, animates one character at a time. When `false`, animates multiple characters per frame for smoother performance. Default: `false`.
+
+#### `resetAnimationType: ResetAnimationType`
+Controls how the animation resets when the target text changes. See `ResetAnimationType` enum for available options. Default: `ResetAnimationType.OnNoMatch`.
 
 #### `isAnimating: boolean` (read-only)
 Returns `true` if an animation is currently in progress.
@@ -163,6 +184,7 @@ The `example` directory contains a Svelte 5 application that demonstrates TypedT
 The example project demonstrates:
 - Different text styles (short, medium, full, other, none)
 - Toggle between character-by-character and bulk animation modes
+- Reset animation type selector (Always, On No Match, Never)
 - Real-time text updates
 - Interactive UI to test various configurations
 
@@ -196,7 +218,10 @@ TypedText uses an interval-based animation system that:
 2. Updates the displayed text incrementally
 3. Handles both adding and removing characters
 4. Automatically stops when the target is reached
-5. Intelligently handles related text transitions (e.g., "Hello" → "Hello World" continues from current position)
+5. Intelligently handles related text transitions based on the `resetAnimationType` setting:
+   - **Always**: Resets to empty before every animation
+   - **On No Match**: Continues from current position if texts partially match (e.g., "Hello" → "Hello World"), otherwise resets
+   - **Never**: Always continues from current position, adjusting only the necessary characters
 
 ## Browser Support
 

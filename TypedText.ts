@@ -99,11 +99,17 @@ export default class TypedText {
     }
 
     private resetCurrentIfNeeded(): void {
-        if (this.resetAnimationType === ResetAnimationType.Never)
+        if (this.resetAnimationType === ResetAnimationType.Never) {
+            if (this._current.length > this._target.length)
+                this.current = this._target + this._current.slice(this._target.length);
+            else
+                this.current = this._target.slice(0, this._current.length);
             return;
+        }
 
         if (this.resetAnimationType === ResetAnimationType.Always
-            || (this.resetAnimationType === ResetAnimationType.OnNoMatch && !this.isCurrentAndTargetPartialMatch)) {
+            || !this.isCurrentAndTargetPartialMatch
+        ) {
             this.current = "";
             return;
         }
