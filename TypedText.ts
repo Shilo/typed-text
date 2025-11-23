@@ -104,14 +104,10 @@ export default class TypedText {
                 this.current = this._target + this._current.slice(this._target.length);
             else
                 this.current = this._target.slice(0, this._current.length);
-            return;
-        }
-
-        if (this.resetAnimationType === ResetAnimationType.Always
+        } else if (this.resetAnimationType === ResetAnimationType.Always
             || !this.isCurrentAndTargetPartialMatch
         ) {
             this.current = "";
-            return;
         }
     }
 
