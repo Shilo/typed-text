@@ -180,13 +180,6 @@
     box-sizing: border-box;
   }
 
-  nav h2 {
-    margin: 0;
-    color: white;
-    font-size: 1.2rem;
-    font-weight: normal;
-  }
-
   nav .controls-group {
     display: flex;
     flex-direction: row;
